@@ -15,7 +15,7 @@ import com.facebook.react.bridge.Callback;
 public class MSALModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
-    private ISingleAccountPublicClientApplication IPublicClientApplication;
+    private ISingleAccountPublicClientApplication publicClientApplication;
     private IAccount mAccount;
 
     public MSALModule(ReactApplicationContext reactContext) {
@@ -23,13 +23,13 @@ public class MSALModule extends ReactContextBaseJavaModule {
         this.reactContext = reactContext;
 
         try{
-            //initialize IPublicClientApplication with config file, located in main/java/res/raw/auth_config_single_account.json
-            IPublicClientApplication = PublicClientApplication.createSingleAccountPublicClientApplication(
+            //initialize publicClientApplication with config file, located in main/java/res/raw/auth_config_single_account.json
+            publicClientApplication = PublicClientApplication.createSingleAccountPublicClientApplication(
                 reactContext,
                 reactContext.getResources().getIdentifier("auth_config_single_account", "raw", reactContext.getPackageName()));
         } catch (Exception e) {
             //will handle this
-            Log.d(TAG, "Something wrong with initialization of IPublicClientApplication: " + e.toString());
+            Log.d(TAG, "Something wrong with initialization of publicClientApplication: " + e.toString());
         }
     }
 
@@ -48,7 +48,7 @@ public class MSALModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void signIn(String scopesValue, Promise promise) {
         if (!scopesValue.isEmpty()) {
-            IPublicClientApplication.signIn(getCurrentActivity(), null, scopesValue.toLowerCase().split(" "), getLoginCallback(promise));
+            publicClientApplication.signIn(getCurrentActivity(), null, scopesValue.toLowerCase().split(" "), getLoginCallback(promise));
         } else {
             //using the code, message parameters; will change code in future when we know what that is
             promise.reject("scopescode", "Scopes is empty.");
